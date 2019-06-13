@@ -379,11 +379,16 @@ def init_variables_from_state_dict(sess,
         raise Exception("The state dict is empty")
     dst_params = {v.name: v for v in tf.global_variables()}
     sess.run(tf.global_variables_initializer())
+    assignments = []
     for src_key in state_dict.keys():
         if src_key in dst_params.keys():
-            assert (state_dict[src_key].shape == tuple(dst_params[src_key].get_shape().as_list()))
-            sess.run(dst_params[src_key].assign(state_dict[src_key]))
+            if state_dict[src_key].shape == tuple(dst_params[src_key].get_shape().as_list()):
+                assignments.append(dst_params[src_key].assign(state_dict[src_key]))
+                print("Init params {} Done!".format(src_key))
+            else:
+                print("Warning : {} has different size than state_dict ({} vs {})".format(src_key, state_dict[src_key].shape, tuple(dst_params[src_key].get_shape().as_list())))
         elif not ignore_extra:
             raise Exception("The state dict is incompatible with the model")
         else:
             print("Key `{}` is ignored".format(src_key))
+    sess.run(assignments)
