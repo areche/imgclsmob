@@ -384,7 +384,6 @@ def init_variables_from_state_dict(sess,
         if src_key in dst_params.keys():
             if state_dict[src_key].shape == tuple(dst_params[src_key].get_shape().as_list()):
                 assignments.append(dst_params[src_key].assign(state_dict[src_key]))
-                print("Init params {} Done!".format(src_key))
             else:
                 print("Warning : {} has different size than state_dict ({} vs {})".format(src_key, state_dict[src_key].shape, tuple(dst_params[src_key].get_shape().as_list())))
         elif not ignore_extra:
